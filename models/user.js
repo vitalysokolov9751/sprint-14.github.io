@@ -1,4 +1,6 @@
+/* eslint-disable linebreak-style */
 const mongoose = require('mongoose');
+const isEmail = require('validator/lib/isEmail');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -20,6 +22,21 @@ const userSchema = new mongoose.Schema({
       message: (props) => `${props.value} - url не действителен!`,
     },
     required: [true, 'Аватар пользователя должен быть задан'],
+  },
+  email: {
+    type: String,
+    validate: {
+      validator: (v) => isEmail(v),
+      message: (props) => `${props.value} - url не действителен!`,
+    },
+    required: [true, 'Email должн быть задан'],
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: [true, 'Пароль должен быть задан'],
+    minlength: [8, 'Пароль должен состоять не менее чем из 2-х символов'],
+    select: false,
   },
 });
 

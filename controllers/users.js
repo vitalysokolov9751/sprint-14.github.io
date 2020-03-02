@@ -1,4 +1,5 @@
 /* eslint-disable linebreak-style */
+const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const User = require('../models/user');
 
@@ -31,12 +32,21 @@ module.exports.getUser = (req, res) => {
 };
 
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => res.send({ user }))
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
+    .then((user) => {
+      res.status(201).send({ _id: user._id, email: user.email });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: `${err.message}` });
+      } else if (err.code === 11000 || err.code === 11001) {
+        res.status(401).send({ message: `Пользователь с почтой ${email} уже есть в базе` });
       } else {
         res.status(500).send({ message: `${err.message}` });
       }
@@ -46,7 +56,9 @@ module.exports.createUser = (req, res) => {
 module.exports.patchProfile = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, about })
-    .then((user) => res.send({ user }))
+    .then((user) => {
+      res.send({ user });
+    })
     .catch((err) => res.status(err.status || 400).send({ message: `${err.message || err}` }));
 };
 
