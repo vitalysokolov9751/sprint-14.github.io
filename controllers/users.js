@@ -1,4 +1,3 @@
-/* eslint-disable linebreak-style */
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const User = require('../models/user');

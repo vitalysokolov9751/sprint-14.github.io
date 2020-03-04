@@ -1,4 +1,3 @@
-/* eslint-disable linebreak-style */
 const users = require('express').Router();
 const {
   getUsers, getUser, patchProfile, patchAvatar,
