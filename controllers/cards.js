@@ -1,4 +1,3 @@
-/* eslint-disable linebreak-style */
 const mongoose = require('mongoose');
 const Card = require('../models/card');
 
@@ -37,7 +36,11 @@ module.exports.deleteCard = (req, res) => {
         res.status(404).send({ message: `Нет карточки с id ${cardId}` });
         return;
       }
-      res.send({ data: card });
+      if (card.owner._id === req.user._id) {
+        res.send({ data: card });
+      } else {
+        res.status(404).send({ message: 'Можно удалить только свою карточку' });
+      }
     })
     .catch((err) => {
       res.status(500).send({ message: `${err.message}` });
